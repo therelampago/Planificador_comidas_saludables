@@ -1,4 +1,5 @@
-import random
+mport random
+import json
 
 class PlanificadorComidas:
     def __init__(self, tipo_dieta="Omnívora"):
@@ -13,17 +14,18 @@ class PlanificadorComidas:
         }
 
     def generar_menu_diario(self):
-        desayuno = [random.choice(list(self.ingredientes["Carbohidratos"].keys())),
-                    random.choice(list(self.ingredientes["Frutas"].keys())),
-                    random.choice(list(self.ingredientes["Líquidos"].keys()))]
-        almuerzo = [random.choice(list(self.ingredientes["Verduras"].keys())),
-                    random.choice(list(self.ingredientes["Proteínas"].keys())),
-                    random.choice(list(self.ingredientes["Carbohidratos"].keys())),
-                    random.choice(list(self.ingredientes["Grasas"].keys()))]
-        cena = [random.choice(list(self.ingredientes["Verduras"].keys())),
-                random.choice(list(self.ingredientes["Proteínas"].keys())),
-                random.choice(list(self.ingredientes["Líquidos"].keys()))]
-        return {"Desayuno": desayuno, "Almuerzo": almuerzo, "Cena": cena}
+        return {
+            "Desayuno": [random.choice(list(self.ingredientes["Carbohidratos"].keys())),
+                          random.choice(list(self.ingredientes["Frutas"].keys())),
+                          random.choice(list(self.ingredientes["Líquidos"].keys()))],
+            "Almuerzo": [random.choice(list(self.ingredientes["Verduras"].keys())),
+                          random.choice(list(self.ingredientes["Proteínas"].keys())),
+                          random.choice(list(self.ingredientes["Carbohidratos"].keys())),
+                          random.choice(list(self.ingredientes["Grasas"].keys()))],
+            "Cena": [random.choice(list(self.ingredientes["Verduras"].keys())),
+                      random.choice(list(self.ingredientes["Proteínas"].keys())),
+                      random.choice(list(self.ingredientes["Líquidos"].keys()))]
+        }
     
     def generar_menu_semanal(self):
         dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
@@ -32,23 +34,22 @@ class PlanificadorComidas:
     def generar_lista_compras(self):
         menu_semanal = self.generar_menu_semanal()
         lista_compras = {}
-        for dia, comidas in menu_semanal.items():
-            for tipo, ingredientes in comidas.items():
+        for comidas in menu_semanal.values():
+            for ingredientes in comidas.values():
                 for ingrediente in ingredientes:
-                    if ingrediente in lista_compras:
-                        lista_compras[ingrediente] += 1
-                    else:
-                        lista_compras[ingrediente] = 1
+                    lista_compras[ingrediente] = lista_compras.get(ingrediente, 0) + 1
         return lista_compras
+
+    def guardar_json(self, nombre_archivo):
+        datos = {
+            "Menú semanal": self.generar_menu_semanal(),
+            "Lista de compras": self.generar_lista_compras()
+        }
+        with open(nombre_archivo, "w", encoding="utf-8") as archivo:
+            json.dump(datos, archivo, indent=4, ensure_ascii=False)
+        print(f"Datos guardados en {nombre_archivo}")
 
 # Uso del programa
 planificador = PlanificadorComidas()
-menu_semanal = planificador.generar_menu_semanal()
-lista_compras = planificador.generar_lista_compras()
+planificador.guardar_json("menu_semanal.json")
 
-print("Menú semanal sugerido:")
-for dia, comidas in menu_semanal.items():
-    print(f"{dia}: {comidas}")
-
-print("\nLista de compras sugerida:")
-print(lista_compras)
