@@ -1,6 +1,5 @@
 # Planificador_comidas_saludables
 
-
 Planificador de Comidas con Exportación a JSON
 
 Este programa genera un menú semanal de comidas basado en diferentes grupos de ingredientes y lo exporta a un archivo JSON.
@@ -8,6 +7,8 @@ Este programa genera un menú semanal de comidas basado en diferentes grupos de 
 Clases y Métodos:
 ------------------
 - `PlanificadorComidas(tipo_dieta="Omnívora")`: Inicializa el planificador con una dieta específica y una lista de ingredientes categorizados.
+- `PlanificadorComidasVegetariano()`: Clase hija que hereda de `PlanificadorComidas` y ajusta la dieta para excluir carnes.
+- `PlanificadorComidasVegano()`: Clase hija que hereda de `PlanificadorComidas` y ajusta la dieta para excluir todos los productos de origen animal.
 - `generar_menu_diario() -> dict`: Genera un menú diario con opciones aleatorias para desayuno, almuerzo y cena.
 - `generar_menu_semanal() -> dict`: Genera un menú semanal con comidas diarias.
 - `generar_lista_compras() -> dict`: Crea una lista de compras basada en los ingredientes del menú semanal.
@@ -15,7 +16,7 @@ Clases y Métodos:
 
 Uso del Programa:
 ------------------
-1. Crear una instancia del `PlanificadorComidas`.
+1. Crear una instancia del `PlanificadorComidas`, `PlanificadorComidasVegetariano` o `PlanificadorComidasVegano`.
 2. Llamar al método `guardar_json("nombre_archivo.json")` para exportar el menú y la lista de compras.
 
 Ejemplo de Uso:
@@ -23,5 +24,13 @@ Ejemplo de Uso:
 ```python
 planificador = PlanificadorComidas()
 planificador.guardar_json("menu_semanal.json")
+
+planificador_veg = PlanificadorComidasVegetariano()
+planificador_veg.guardar_json("menu_vegetariano.json")
+
+planificador_vegano = PlanificadorComidasVegano()
+planificador_vegano.guardar_json("menu_vegano.json")
+```
+Esto generará archivos JSON con los menús semanales y las listas de compras.
 ```
 Esto generará un archivo `menu_semanal.json` con el menú semanal y la lista de compras.
