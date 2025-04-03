@@ -1,4 +1,4 @@
-mport random
+import random
 import json
 
 class PlanificadorComidas:
@@ -49,7 +49,25 @@ class PlanificadorComidas:
             json.dump(datos, archivo, indent=4, ensure_ascii=False)
         print(f"Datos guardados en {nombre_archivo}")
 
+class PlanificadorComidasVegetariano(PlanificadorComidas):
+    def __init__(self):
+        super().__init__(tipo_dieta="Vegetariana")
+        self.ingredientes["Proteínas"] = {"Tofu": 76, "Lentejas": 116, "Garbanzos": 164, "Frijoles": 127, "Seitán": 120}
+
+class PlanificadorComidasVegano(PlanificadorComidas):
+    def __init__(self):
+        super().__init__(tipo_dieta="Vegana")
+        self.ingredientes["Proteínas"] = {"Tofu": 76, "Lentejas": 116, "Garbanzos": 164, "Frijoles": 127, "Seitán": 120}
+        self.ingredientes["Líquidos"] = {"Agua": 0, "Infusiones": 1}
+        self.ingredientes["Grasas"] = {"Frutos secos": 607, "Semillas de chía": 486}
+
 # Uso del programa
 planificador = PlanificadorComidas()
 planificador.guardar_json("menu_semanal.json")
+
+planificador_veg = PlanificadorComidasVegetariano()
+planificador_veg.guardar_json("menu_vegetariano.json")
+
+planificador_vegano = PlanificadorComidasVegano()
+planificador_vegano.guardar_json("menu_vegano.json")
 
