@@ -14,18 +14,16 @@ class PlanificadorComidas:
         }
 
     def generar_menu_diario(self):
-        return {
-            "Desayuno": [random.choice(list(self.ingredientes["Carbohidratos"].keys())),
-                          random.choice(list(self.ingredientes["Frutas"].keys())),
-                          random.choice(list(self.ingredientes["Líquidos"].keys()))],
-            "Almuerzo": [random.choice(list(self.ingredientes["Verduras"].keys())),
-                          random.choice(list(self.ingredientes["Proteínas"].keys())),
-                          random.choice(list(self.ingredientes["Carbohidratos"].keys())),
-                          random.choice(list(self.ingredientes["Grasas"].keys()))],
-            "Cena": [random.choice(list(self.ingredientes["Verduras"].keys())),
-                      random.choice(list(self.ingredientes["Proteínas"].keys())),
-                      random.choice(list(self.ingredientes["Líquidos"].keys()))]
-        }
+        menu = {}
+        total_calorias = 0
+        for comida, categorias in {"Desayuno": ["Carbohidratos", "Frutas", "Líquidos"],
+                                   "Almuerzo": ["Verduras", "Proteínas", "Carbohidratos", "Grasas"],
+                                   "Cena": ["Verduras", "Proteínas", "Líquidos"]}.items():
+            seleccion = [random.choice(list(self.ingredientes[categoria].keys())) for categoria in categorias]
+            calorias = sum(self.ingredientes[categoria][ingrediente] for categoria, ingrediente in zip(categorias, seleccion))
+            total_calorias += calorias
+            menu[comida] = {"Ingredientes": seleccion, "Calorías": calorias}
+        return menu
     
     def generar_menu_semanal(self):
         dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
@@ -35,8 +33,8 @@ class PlanificadorComidas:
         menu_semanal = self.generar_menu_semanal()
         lista_compras = {}
         for comidas in menu_semanal.values():
-            for ingredientes in comidas.values():
-                for ingrediente in ingredientes:
+            for detalles in comidas.values():
+                for ingrediente in detalles["Ingredientes"]:
                     lista_compras[ingrediente] = lista_compras.get(ingrediente, 0) + 1
         return lista_compras
 
@@ -61,13 +59,21 @@ class PlanificadorComidasVegano(PlanificadorComidas):
         self.ingredientes["Líquidos"] = {"Agua": 0, "Infusiones": 1}
         self.ingredientes["Grasas"] = {"Frutos secos": 607, "Semillas de chía": 486}
 
-# Uso del programa
-planificador = PlanificadorComidas()
-planificador.guardar_json("menu_semanal.json")
+# Elección del usuario
+opciones = {"1": PlanificadorComidas, "2": PlanificadorComidasVegetariano, "3": PlanificadorComidasVegano}
+while True:
+    print("Seleccione el tipo de dieta:")
+    print("1. Omnívora\n2. Vegetariana\n3. Vegana\n4. Salir")
+    eleccion = input("Ingrese el número de su elección: ")
+    
+    if eleccion == "4":
+        print("Saliendo del programa...")
+        break
+    elif eleccion in opciones:
+        planificador = opciones[eleccion]()
+        archivo = "menu_" + planificador.tipo_dieta.lower() + ".json"
+        planificador.guardar_json(archivo)
+    else:
+        print("Opción no válida. Por favor, seleccione una opción válida.")
 
-planificador_veg = PlanificadorComidasVegetariano()
-planificador_veg.guardar_json("menu_vegetariano.json")
-
-planificador_vegano = PlanificadorComidasVegano()
-planificador_vegano.guardar_json("menu_vegano.json")
 
